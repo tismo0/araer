@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Dynamique avec Pop-up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: black;
+            color: #00FF00; /* Couleur Matrix verte */
+            text-align: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            flex-direction: column;
+            position: relative;
+            animation: matrixBackground 1s infinite;
+        }
+
+        /* Animation de fond style Matrix */
+        @keyframes matrixBackground {
+            0% { background-color: black; }
+            50% { background-color: #003300; }
+            100% { background-color: black; }
+        }
+
+        /* Texte cliquable avec effet flashy */
+        .intro-text {
+            font-size: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            animation: flashText 1s linear infinite;
+            transition: all 0.3s ease;
+        }
+
+        @keyframes flashText {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Animation des informations de géolocalisation en style Matrix */
+        .info-line {
+            font-size: 20px;
+            margin: 5px;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+            display: inline-block;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Style des pop-ups avec images */
+        .popup {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 100px;
+            height: 100px;
+            display: none;
+            animation: popupClignote 1.5s infinite alternate;
+            z-index: 999;
+        }
+
+        /* Animation des pop-ups */
+        @keyframes popupClignote {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Container de la page après le clic */
+        #chefContainer {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* Musique de fond */
+        audio {
+            margin-top: 20px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Texte dynamique cliquable -->
+    <div class="intro-text" onclick="showContent()">Clique ici, tu ne seras pas déçu</div>
+
+    <!-- Contenu après le clic -->
+    <div id="chefContainer">
+        <h1>Ayoub ta localisé ne regarde pas en bas a droite !</h1>
+        <div id="info"></div>
+        <audio id="backgroundMusic" autoplay loop>
+            <source src="Welcome to the Game - Hacking Alert.mp3" type="audio/mp3">
+            Votre navigateur ne supporte pas la lecture audio.
+        </audio>
+    </div>
+
+    <!-- Pop-ups fausses (images personnalisées clignotantes) -->
+    <div id="popup1" class="popup">
+        <img src="Capture d'écran 2024-12-19 205517.png" alt="Popup Image 1" style="width: 100%; height: 100%;">
+    </div>
+    <div id="popup2" class="popup">
+        <img src="Capture d'écran 2024-12-19 205548.png" alt="Popup Image 2" style="width: 100%; height: 100%;">
+    </div>
+    <div id="popup3" class="popup">
+        <img src="Capture d'écran 2024-12-19 205606.png" alt="Popup Image 3" style="width: 100%; height: 100%;">
+    </div>
+
+    <script>
+        // Fonction qui déclenche l'affichage du contenu après le clic
+        function showContent() {
+            document.querySelector('.intro-text').style.display = 'none';
+            document.getElementById('chefContainer').style.display = 'block'; // Afficher la page après le clic
+            document.getElementById('backgroundMusic').play(); // Lancer la musique
+            fetchLocationInfo(); // Récupérer les infos de localisation
+            showFakePopups(); // Afficher les pop-ups fausses
+        }
+
+        // Fonction pour récupérer les informations de géolocalisation et IP
+        function fetchLocationInfo() {
+            fetch('https://ipinfo.io?token=687448e0855b6d') // Remplacez par votre token
+                .then(response => response.json())
+                .then(data => {
+                    const location = data.city + ", " + data.country;
+                    const ip = data.ip;
+                    const latitudeLongitude = data.loc.split(',');
+                    const latitude = latitudeLongitude[0];
+                    const longitude = latitudeLongitude[1];
+
+                    const system = navigator.platform;
+                    const browser = navigator.userAgent;
+                    const language = navigator.language;
+                    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+                    // Ajouter les infos à l'écran avec l'effet Matrix
+                    addInfoLine(`Localisation : ${location} (Lat: ${latitude}, Lng: ${longitude})`);
+                    addInfoLine(`IP : ${ip}`);
+                    addInfoLine(`Système : ${system}`);
+                    addInfoLine(`Navigateur : ${browser}`);
+                    addInfoLine(`Langue : ${language}`);
+                    addInfoLine(`Fuseau horaire : ${timezone}`);
+                    addInfoLine(`Date et Heure : ${new Date().toLocaleString()}`);
+                    addInfoLine(`Hacked by ayolocalisé regarde pas a gauche a  droiteubb 3A tu es  : ${new Date().toLocaleString()}`);
+                    addInfoLine(`Navigateur : ${browser}`);
+                })
+                .catch(error => console.log("Erreur de géolocalisation :", error));
+        }
+
+        // Fonction pour ajouter des informations avec animation Matrix
+        function addInfoLine(text) {
+            const infoDiv = document.getElementById('info');
+            const newLine = document.createElement('div');
+            newLine.classList.add('info-line');
+            newLine.textContent = text;
+            infoDiv.appendChild(newLine);
+        }
+
+        // Fonction pour afficher les pop-ups fausses qui tournent autour de la page
+        function showFakePopups() {
+            setTimeout(() => document.getElementById('popup1').style.display = 'block', 1000);
+            setTimeout(() => document.getElementById('popup2').style.display = 'block', 3000);
+            setTimeout(() => document.getElementById('popup3').style.display = 'block', 5000);
+        }
+    </script>
+</body>
+</html>
